@@ -1,0 +1,16 @@
+../drivers/fsl_iap.c:58:24:translate_iap_status	24	static
+../drivers/fsl_iap.c:71:20:iap_entry	24	static
+../drivers/fsl_iap.c:87:10:IAP_ReadPartID	64	static
+../drivers/fsl_iap.c:110:10:IAP_ReadBootCodeVersion	64	static
+../drivers/fsl_iap.c:137:6:IAP_ReinvokeISP	64	static
+../drivers/fsl_iap.c:184:10:IAP_ReadUniqueID	64	static
+../drivers/fsl_iap.c:217:6:IAP_ConfigAccessFlashTime	24	static
+../drivers/fsl_iap.c:269:10:IAP_PrepareSectorForWrite	64	static
+../drivers/fsl_iap.c:306:10:IAP_CopyRamToFlash	72	static
+../drivers/fsl_iap.c:340:10:IAP_EraseSector	72	static
+../drivers/fsl_iap.c:373:10:IAP_ErasePage	72	static
+../drivers/fsl_iap.c:402:10:IAP_BlankCheckSector	64	static
+../drivers/fsl_iap.c:433:10:IAP_Compare	72	static
+../drivers/fsl_iap.c:460:10:IAP_ExtendedFlashSignatureRead	72	static
+../drivers/fsl_iap.c:576:10:IAP_ReadFAIMPage	64	static
+../drivers/fsl_iap.c:600:10:IAP_WriteFAIMPage	64	static

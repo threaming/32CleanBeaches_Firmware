@@ -1,0 +1,10 @@
+McuLib/src/McuUtility.o McuLib/src/McuUtility.d: \
+ ../McuLib/src/McuUtility.c \
+ C:/Users/andre/OneDrive\ -\ Hochschule\ Luzern/00_Modules/FS23_AEMBS/00_workspace_AEMBS_V11.7.0/32_LPC_Firmware/source/IncludeMcuLibConfig.h \
+ ../McuLib/src/McuUtility.h ../McuLib/src/McuLib.h \
+ ../McuLib/config/McuLibconfig.h ../McuLib/config/McuUtilityconfig.h
+C:/Users/andre/OneDrive\ -\ Hochschule\ Luzern/00_Modules/FS23_AEMBS/00_workspace_AEMBS_V11.7.0/32_LPC_Firmware/source/IncludeMcuLibConfig.h:
+../McuLib/src/McuUtility.h:
+../McuLib/src/McuLib.h:
+../McuLib/config/McuLibconfig.h:
+../McuLib/config/McuUtilityconfig.h:
