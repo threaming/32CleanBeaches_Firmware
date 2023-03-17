@@ -47,13 +47,15 @@ int main(void) {
     McuGPIO_Init();
     /* GPIO Configuration */
 		McuGPIO_Config_t config;
-		McuGPIO_Handle_t StepPin;
-		McuGPIO_Handle_t DirPin;
+		McuGPIO_Handle_t Step1Pin;
+		McuGPIO_Handle_t Dir1Pin;
+		McuGPIO_Handle_t Step2Pin;
+		McuGPIO_Handle_t Dir2Pin;
 		McuGPIO_Handle_t EnPin;
 		McuGPIO_Handle_t Ms1Pin;
 		McuGPIO_Handle_t Ms2Pin;
 
-    /* GPIO Stepper Step */
+    /* GPIO Stepper 1 Step */
 		McuGPIO_GetDefaultConfig(&config);
 		config.isInput = false;
 		config.isHighOnInit = false;
@@ -61,9 +63,9 @@ int main(void) {
 		config.hw.port = 0;
 		config.hw.pin = 11;
 		config.hw.iocon = IOCON_INDEX_PIO0_11;
-		StepPin = McuGPIO_InitGPIO(&config);
+		Step1Pin = McuGPIO_InitGPIO(&config);
 
-    /* GPIO Stepper Direction */
+    /* GPIO Stepper 1 Direction */
         McuGPIO_GetDefaultConfig(&config);
         config.isInput = false;
         config.isHighOnInit = false;
@@ -71,7 +73,27 @@ int main(void) {
         config.hw.port = 0;
         config.hw.pin = 13;
         config.hw.iocon = IOCON_INDEX_PIO0_13;
-        DirPin = McuGPIO_InitGPIO(&config);
+        Dir1Pin = McuGPIO_InitGPIO(&config);
+
+    /* GPIO Stepper 2 Step */
+		McuGPIO_GetDefaultConfig(&config);
+		config.isInput = false;
+		config.isHighOnInit = false;
+		config.hw.gpio = GPIO;
+		config.hw.port = 0;
+		config.hw.pin = 14;
+		config.hw.iocon = IOCON_INDEX_PIO0_14;
+		Step2Pin = McuGPIO_InitGPIO(&config);
+
+	/* GPIO Stepper 2 Direction */
+		McuGPIO_GetDefaultConfig(&config);
+		config.isInput = false;
+		config.isHighOnInit = false;
+		config.hw.gpio = GPIO;
+		config.hw.port = 0;
+		config.hw.pin = 15;
+		config.hw.iocon = IOCON_INDEX_PIO0_15;
+		Dir2Pin = McuGPIO_InitGPIO(&config);
 
     /* GPIO Stepper Enable */
 		McuGPIO_GetDefaultConfig(&config);
@@ -111,10 +133,12 @@ int main(void) {
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
     	/* Stepping */
-    	McuGPIO_SetLow(StepPin);
-    	McuWait_Waitms(5);
-    	McuGPIO_SetHigh(StepPin);
-		McuWait_Waitms(5);
+    	McuGPIO_SetLow(Step1Pin);
+    	McuGPIO_SetLow(Step2Pin);
+    	McuWait_Waitms(10);
+    	McuGPIO_SetHigh(Step1Pin);
+    	McuGPIO_SetHigh(Step2Pin);
+		McuWait_Waitms(10);
     }
     return 0 ;
 }

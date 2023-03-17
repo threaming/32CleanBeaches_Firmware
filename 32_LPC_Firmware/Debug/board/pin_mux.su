@@ -1,3 +1,2 @@
-C:\Users\andre\OneDrive - Hochschule Luzern\00_Modules\FS23_AEMBS\00_workspace_AEMBS_V11.7.0\32_LPC_Firmware\drivers/fsl_clock.h:558:20:CLOCK_EnableClock	16	static
-../board/pin_mux.c:38:6:BOARD_InitBootPins	8	static
-../board/pin_mux.c:68:6:BOARD_InitPins	40	static
+../board/pin_mux.c:37:6:BOARD_InitBootPins	8	static
+../board/pin_mux.c:59:6:BOARD_InitPins	8	static
