@@ -25,6 +25,13 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
+/*! @name PIO0_0 (number 36), LuxServo
+  @{ */
+#define BOARD_INITPINS_LuxServo_PORT 0U                  /*!<@brief PORT device index: 0 */
+#define BOARD_INITPINS_LuxServo_PIN 0U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LuxServo_PIN_MASK (1U << 0U)      /*!<@brief PORT pin mask */
+                                                         /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

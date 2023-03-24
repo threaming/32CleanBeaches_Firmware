@@ -21,11 +21,13 @@ pin_labels:
 - {pin_num: '13', pin_signal: PIO0_10/I2C0_SCL, label: STEP_MS2, identifier: STEP_MS2}
 - {pin_num: '12', pin_signal: PIO0_11/I2C0_SDA, label: STEP_STEP, identifier: STEP_STEP}
 - {pin_num: '2', pin_signal: PIO0_13/ADC_10, label: STEP_DIR, identifier: STEP_DIR}
+- {pin_num: '36', pin_signal: PIO0_0/ACMP_I1, label: LuxServo, identifier: LuxServo}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
 
 #include "fsl_common.h"
+#include "fsl_swm.h"
 #include "pin_mux.h"
 
 /* FUNCTION ************************************************************************************************************
@@ -44,7 +46,8 @@ void BOARD_InitBootPins(void)
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 BOARD_InitPins:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
-- pin_list: []
+- pin_list:
+  - {pin_num: '36', peripheral: SCT0, signal: 'OUT, 0', pin_signal: PIO0_0/ACMP_I1}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -58,6 +61,14 @@ BOARD_InitPins:
 /* Function assigned for the Cortex-M0P */
 void BOARD_InitPins(void)
 {
+    /* Enables clock for switch matrix.: enable */
+    CLOCK_EnableClock(kCLOCK_Swm);
+
+    /* SCT_OUT0 connect to P0_0 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_SCT_OUT0, kSWM_PortPin_P0_0);
+
+    /* Disable clock for switch matrix. */
+    CLOCK_DisableClock(kCLOCK_Swm);
 }
 /***********************************************************************************************************************
  * EOF

@@ -1,3 +1,0 @@
-../McuLib/SEGGER_Sysview/SEGGER_SYSVIEW_Config_FreeRTOS.c:144:10:SEGGER_uxGetTickCounterValue	16	static
-../McuLib/SEGGER_Sysview/SEGGER_SYSVIEW_Config_FreeRTOS.c:205:5:SEGGER_SYSVIEW_X_GetTimestamp	8	static
-../McuLib/SEGGER_Sysview/SEGGER_SYSVIEW_Config_FreeRTOS.c:254:6:SEGGER_SYSVIEW_Conf	8	static
