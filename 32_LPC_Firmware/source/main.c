@@ -38,12 +38,12 @@
 #include "clock_config.h"
 #include "McuWait.h"
 #include "McuGPIO.h"
-#include "Stepper.h"
+#include "CleanBeaches/Stepper.h"
+#include "CleanBeaches/Servo.h"
 #include "fsl_sctimer.h"
 #include "fsl_iocon.h"
 /* TODO: insert other definitions and declarations here. */
-#define SCTIMER_CLK_FREQ        CLOCK_GetFreq(kCLOCK_Fro)
-
+#define SCTIMER_SERVO_BUCKET	kSCTIMER_Out_0
 
 /*
  * @brief   Application entry point.
@@ -56,27 +56,21 @@ int main(void) {
     McuWait_Init();
     McuGPIO_Init();
     Stepper_Init();
+    Servo_Init();
     //Stepper_Dostuff();
 
     /* PWM Setup */
-    uint32_t event;
-    sctimer_config_t sctimerConfig;
-    sctimer_pwm_signal_param_t pwmParam;
+    uint32_t eventServoBucket;
+    Servo_Handle_t servoBucket = {SCTIMER_SERVO_BUCKET, 800, 0, 2000, 0, 50}; // SCTIMER, lower-, upper-pulselength, percentage
+    Servo_Setup(&servoBucket, &eventServoBucket);
+    Servo_TimerStart();
 
-    SCTIMER_GetDefaultConfig(&sctimerConfig);
-    SCTIMER_Init(SCT0, &sctimerConfig);
-
-    pwmParam.output = kSCTIMER_Out_0;
-    pwmParam.level = kSCTIMER_HighTrue;
-    pwmParam.dutyCyclePercent = 30;
-    if(SCTIMER_SetupPwm(SCT0, &pwmParam, kSCTIMER_CenterAlignedPwm, 240U, SCTIMER_CLK_FREQ, &event) == kStatus_Fail){
-    	return -1;
-    }
-
-    SCTIMER_StartTimer(SCT0, kSCTIMER_Counter_U);
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-
+    	McuWait_Waitms(5000);
+    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
+    	McuWait_Waitms(5000);
+    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
 
     }
     return 0 ;
