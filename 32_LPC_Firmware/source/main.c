@@ -57,20 +57,22 @@ int main(void) {
     McuGPIO_Init();
     Stepper_Init();
     Servo_Init();
-    //Stepper_Dostuff();
+    Stepper_Dostuff();
 
     /* PWM Setup */
     uint32_t eventServoBucket;
-    Servo_Handle_t servoBucket = {SCTIMER_SERVO_BUCKET, 800, 0, 2000, 0, 50}; // SCTIMER, lower-, upper-pulselength, percentage
+    Servo_Handle_t servoBucket = {SCTIMER_SERVO_BUCKET, 800, 0, 2000, 0, 0}; // SCTIMER, lower-pulse, -register, upper-pulse, -register, percentage
     Servo_Setup(&servoBucket, &eventServoBucket);
     Servo_TimerStart();
+    Servo_SetPulse(servoBucket, 100, eventServoBucket);
 
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-    	McuWait_Waitms(5000);
-    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
-    	McuWait_Waitms(5000);
-    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
+//    	McuWait_Waitms(5000);
+//    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
+//    	McuWait_Waitms(5000);
+//    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
+
 
     }
     return 0 ;

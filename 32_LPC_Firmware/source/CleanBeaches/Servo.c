@@ -12,8 +12,7 @@
 #define SCTIMER_CLK_FREQ CLOCK_GetFreq(kCLOCK_Fro)
 
 /* Servo Defines */
-//#define PULSE_TO_PWMPERC(upper, lower, percent) ((uint8_t)(((((upper-lower)*percent)/20000))+(lower/20000)))
-#define PULSE_TO_PWMPERC(upper, lower, percent) ((uint8_t)(((upper - lower) * percent) / (100 * 256)))
+#define PULSE_TO_PWMPERC(upper, lower, percent) ((uint8_t)(((((upper-lower)*percent)/20000))+(lower/20000)))
 
 /*
  * Initialize SCT0 Timer for PWM
@@ -26,13 +25,14 @@ void Servo_Init(){
 }
 
 /*
- * Setup a Servo on pin servoHandle.output
+ * Setup a Servo on pin servoHandle.output. It always runs on 50Hz (20ms period)
  *
  * After all Setups Servo_TimerStart(); must be called
+ *
  */
 void Servo_Setup(Servo_Handle_t *servoHandle, uint32_t *event){
 	sctimer_pwm_signal_param_t pwmParam;
-	uint32_t periodMatchReg, period;
+	uint32_t periodMatchReg, period, pulseMatchReg, pulsePeriod;
 
 	pwmParam.output = servoHandle->output;
 	pwmParam.level = kSCTIMER_HighTrue;
@@ -51,6 +51,16 @@ void Servo_Setup(Servo_Handle_t *servoHandle, uint32_t *event){
 	// calculate register limits for pulse
 	servoHandle->lowerRegister = (servoHandle->lowerPulse_us*period)/20000;
 	servoHandle->upperRegister = (servoHandle->upperPulse_us*period)/20000;
+
+	/* Retrieve the match register number for the PWM pulse period */
+	pulseMatchReg = SCT0->EV[*event + 1U].CTRL & SCT_EV_CTRL_MATCHSEL_MASK;
+
+	/* For 100% dutycyle, make pulse period greater than period so the event will never occur */
+	pulsePeriod = ((((servoHandle->pulsePercent * (servoHandle->upperRegister - servoHandle->lowerRegister)) / 100U) + servoHandle->lowerRegister));
+
+	/* Update dutycycle */
+	SCT0->MATCH[pulseMatchReg]    = pulsePeriod;
+	SCT0->MATCHREL[pulseMatchReg] = pulsePeriod;
 }
 
 /*
