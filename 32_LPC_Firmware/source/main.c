@@ -57,7 +57,6 @@ int main(void) {
     McuGPIO_Init();
     Stepper_Init();
     Servo_Init();
-    Stepper_Dostuff();
 
     /* PWM Setup */
     uint32_t eventServoBucket;
@@ -68,9 +67,11 @@ int main(void) {
 
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-//    	McuWait_Waitms(5000);
+    	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
+    	McuWait_Waitms(5000);
+    	Stepper_Dostuff(STEPPER_INOUT, OUT, 500);
+    	McuWait_Waitms(5000);
 //    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
-//    	McuWait_Waitms(5000);
 //    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
 
 
