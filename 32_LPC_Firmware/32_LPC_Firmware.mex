@@ -125,7 +125,7 @@
          </dcdx_profile>
          <dcdx_configurations/>
       </dcdx>
-      <periphs name="Peripherals" version="12.0" enabled="true" update_project_code="true">
+      <periphs name="Peripherals" version="12.0" enabled="false" update_project_code="true">
          <generated_project_files>
             <file path="board/peripherals.c" update_enabled="true"/>
             <file path="board/peripherals.h" update_enabled="true"/>
