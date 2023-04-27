@@ -90,3 +90,27 @@ void BOARD_BootClockRUN(void);
 
 #endif /* _CLOCK_CONFIG_H_ */
 
+/*******************************************************************************
+ ******************** Configuration BOARD_BootClockFRO30M **********************
+ ******************************************************************************/
+/*******************************************************************************
+ * Definitions for BOARD_BootClockFRO30M configuration
+ ******************************************************************************/
+#define BOARD_BOOTCLOCKFRO30M_CORE_CLOCK           30000000U  /*!< Core clock frequency: 30000000Hz */
+
+/*******************************************************************************
+ * API for BOARD_BootClockFRO30M configuration
+ ******************************************************************************/
+#if defined(__cplusplus)
+extern "C" {
+#endif /* __cplusplus*/
+
+/*!
+ * @brief This function executes configuration of clocks.
+ *
+ */
+void BOARD_BootClockFRO30M(void);
+
+#if defined(__cplusplus)
+}
+#endif /* __cplusplus*/

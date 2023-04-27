@@ -40,8 +40,8 @@
 #include "McuGPIO.h"
 #include "CleanBeaches/Stepper.h"
 #include "CleanBeaches/Servo.h"
-#include "fsl_sctimer.h"
-#include "fsl_iocon.h"
+#include "CleanBeaches/32_Uart.h"
+
 /* TODO: insert other definitions and declarations here. */
 #define SCTIMER_SERVO_BUCKET	kSCTIMER_Out_0
 
@@ -52,11 +52,15 @@ int main(void) {
 	/* Initialisations */
 	BOARD_InitBootPins();
 	BOARD_InitBootClocks();
+	BOARD_BootClockFRO30M();	// Enable clock to 30MHz
 
     McuWait_Init();
     McuGPIO_Init();
     Stepper_Init();
     Servo_Init();
+    Uart_Init();
+
+    uint8_t txbuff[] = "Hello World 32 Clean Beaches";
 
     /* PWM Setup */
     uint32_t eventServoBucket;
@@ -68,8 +72,10 @@ int main(void) {
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
     	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
+    	Uart_Write(txbuff);
     	McuWait_Waitms(5000);
     	Stepper_Dostuff(STEPPER_INOUT, OUT, 500);
+    	Uart_Write(txbuff);
     	McuWait_Waitms(5000);
 //    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
 //    	Servo_SetPulse(servoBucket, 80, eventServoBucket);

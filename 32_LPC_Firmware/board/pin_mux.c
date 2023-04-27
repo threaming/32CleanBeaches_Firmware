@@ -22,6 +22,8 @@ pin_labels:
 - {pin_num: '12', pin_signal: PIO0_11/I2C0_SDA, label: STEP_STEP, identifier: STEP_STEP}
 - {pin_num: '2', pin_signal: PIO0_13/ADC_10, label: STEP_DIR, identifier: STEP_DIR}
 - {pin_num: '36', pin_signal: PIO0_0/ACMP_I1, label: LuxServo, identifier: LuxServo}
+- {pin_num: '20', pin_signal: PIO0_24, label: TXD, identifier: TXD}
+- {pin_num: '19', pin_signal: PIO0_25, label: RXD, identifier: RXD}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -48,6 +50,8 @@ BOARD_InitPins:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
 - pin_list:
   - {pin_num: '36', peripheral: SCT0, signal: 'OUT, 0', pin_signal: PIO0_0/ACMP_I1}
+  - {pin_num: '20', peripheral: USART0, signal: TXD, pin_signal: PIO0_24}
+  - {pin_num: '19', peripheral: USART0, signal: RXD, pin_signal: PIO0_25}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -63,6 +67,12 @@ void BOARD_InitPins(void)
 {
     /* Enables clock for switch matrix.: enable */
     CLOCK_EnableClock(kCLOCK_Swm);
+
+    /* USART0_TXD connect to P0_24 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_USART0_TXD, kSWM_PortPin_P0_24);
+
+    /* USART0_RXD connect to P0_25 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_USART0_RXD, kSWM_PortPin_P0_25);
 
     /* SCT_OUT0 connect to P0_0 */
     SWM_SetMovablePinSelect(SWM0, kSWM_SCT_OUT0, kSWM_PortPin_P0_0);

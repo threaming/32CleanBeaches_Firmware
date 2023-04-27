@@ -32,6 +32,20 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_LuxServo_PIN_MASK (1U << 0U)      /*!<@brief PORT pin mask */
                                                          /* @} */
 
+/*! @name PIO0_24 (number 20), TXD
+  @{ */
+#define BOARD_INITPINS_TXD_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITPINS_TXD_PIN 24U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_TXD_PIN_MASK (1U << 24U)      /*!<@brief PORT pin mask */
+                                                     /* @} */
+
+/*! @name PIO0_25 (number 19), RXD
+  @{ */
+#define BOARD_INITPINS_RXD_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITPINS_RXD_PIN 25U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_RXD_PIN_MASK (1U << 25U)      /*!<@brief PORT pin mask */
+                                                     /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *
