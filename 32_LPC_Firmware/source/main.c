@@ -33,6 +33,7 @@
  * @brief   Application entry point.
  */
 #include <stdio.h>
+#include <stdint.h>
 /* insert other include files here. */
 #include "pin_mux.h"
 #include "clock_config.h"
@@ -40,8 +41,7 @@
 #include "McuGPIO.h"
 #include "CleanBeaches/Stepper.h"
 #include "CleanBeaches/Servo.h"
-#include "fsl_sctimer.h"
-#include "fsl_iocon.h"
+#include "CleanBeaches/Uart.h"
 /* TODO: insert other definitions and declarations here. */
 #define SCTIMER_SERVO_BUCKET	kSCTIMER_Out_0
 
@@ -55,18 +55,23 @@ int main(void) {
 
     McuWait_Init();
     McuGPIO_Init();
+    Uart_Init();
     Stepper_Init();
     Servo_Init();
 
     /* PWM Setup */
     uint32_t eventServoBucket;
-    Servo_Handle_t servoBucket = {SCTIMER_SERVO_BUCKET, 800, 0, 2000, 0, 0}; // SCTIMER, lower-pulse, -register, upper-pulse, -register, percentage
+    Servo_Handle_t servoBucket = {SCTIMER_SERVO_BUCKET, 900, 0, 2100, 0, 0}; // SCTIMER, lower-pulse, -register, upper-pulse, -register, percentage
     Servo_Setup(&servoBucket, &eventServoBucket);
     Servo_TimerStart();
     Servo_SetPulse(servoBucket, 100, eventServoBucket);
 
+    uint8_t i=0;
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
+    	i++;
+    	Uart_SendString("\nHello PREN ");
+    	Uart_SendNum32(i);
     	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
     	McuWait_Waitms(5000);
     	Stepper_Dostuff(STEPPER_INOUT, OUT, 500);

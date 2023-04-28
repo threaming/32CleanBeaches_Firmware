@@ -104,4 +104,10 @@ add_compile_options(-include "../config/IncludeMcuLibConfig.h")
 /* ------------------- FatFS ---------------------------*/
 #define McuLib_CONFIG_USE_FAT_FS             (0)
 
+/* -------------------------------------------------*/
+/* McuShellUart */
+#define McuShellUart_CONFIG_UART  McuShellUart_CONFIG_UART_LPC845_USART0
+#define McuShellUart_CONFIG_UART_LPC845_USART0            (1) /* Rx on pin 20 (PIO0_24), Tx on pin 19 (PIO0_25) */
+
+
 #endif /* INCLUDEMCULIBCONFIG_H_ */
