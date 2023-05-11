@@ -42,6 +42,7 @@
 #include "CleanBeaches/Stepper.h"
 #include "CleanBeaches/Servo.h"
 #include "CleanBeaches/Uart.h"
+#include "CleanBeaches/Counting.h"
 /* TODO: insert other definitions and declarations here. */
 #define SCTIMER_SERVO_BUCKET	kSCTIMER_Out_0
 
@@ -58,6 +59,7 @@ int main(void) {
     Uart_Init();
     Stepper_Init();
     Servo_Init();
+    Counter_Init();
 
     /* PWM Setup */
     uint32_t eventServoBucket;
@@ -66,19 +68,19 @@ int main(void) {
     Servo_TimerStart();
     Servo_SetPulse(servoBucket, 100, eventServoBucket);
 
-    uint8_t i=0;
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-    	i++;
     	Uart_SendString("\nHello PREN ");
-    	Uart_SendNum32(i);
-    	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
-    	McuWait_Waitms(5000);
+    	Uart_SendNum32(GetCnt(ZIGI));
     	Stepper_Dostuff(STEPPER_INOUT, OUT, 500);
     	McuWait_Waitms(5000);
+    	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
+    	McuWait_Waitms(5000);
+
+//    	Stepper_Home(STEPPER_INOUT);
+//    	while(!Stepper_Isdone(STEPPER_INOUT)){;}
 //    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
 //    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
-
 
     }
     return 0 ;

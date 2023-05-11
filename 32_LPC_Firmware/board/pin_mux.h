@@ -32,6 +32,27 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_LuxServo_PIN_MASK (1U << 0U)      /*!<@brief PORT pin mask */
                                                          /* @} */
 
+/*! @name PIO0_26 (number 18), LS_Zigi
+  @{ */
+#define BOARD_INITPINS_LS_Zigi_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITPINS_LS_Zigi_PIN 26U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LS_Zigi_PIN_MASK (1U << 26U)      /*!<@brief PORT pin mask */
+                                                         /* @} */
+
+/*! @name PIO0_27 (number 17), LS_PET
+  @{ */
+#define BOARD_INITPINS_LS_PET_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITPINS_LS_PET_PIN 27U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LS_PET_PIN_MASK (1U << 27U)      /*!<@brief PORT pin mask */
+                                                        /* @} */
+
+/*! @name PIO0_28 (number 7), LS_Bier
+  @{ */
+#define BOARD_INITPINS_LS_Bier_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITPINS_LS_Bier_PIN 28U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LS_Bier_PIN_MASK (1U << 28U)      /*!<@brief PORT pin mask */
+                                                         /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

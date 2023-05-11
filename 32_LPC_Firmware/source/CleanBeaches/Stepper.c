@@ -78,6 +78,12 @@ void StepCtrl(stepper_t stepper){
 		else{
 			stepCtrl[stepper].currentPos--;
 		}
+
+		/* reached endstop */
+		if(McuGPIO_IsHigh(stepCtrl[stepper].StopPin)){
+			stepCtrl[stepper].stepsTodo = 0;
+			stepCtrl[stepper].currentPos = 0;
+		}
 	}
 
 	/* Homing sequence */
@@ -169,7 +175,7 @@ void Stepper_Halt(stepper_t stepper){
  * Check if Stepper is done
  */
 bool Stepper_Isdone(stepper_t stepper){
-	if(stepCtrl[stepper].stepsTodo == 0){
+	if((stepCtrl[stepper].stepsTodo == 0) && stepCtrl[stepper].homing == false){
 		return true;
 	}
 	return false;

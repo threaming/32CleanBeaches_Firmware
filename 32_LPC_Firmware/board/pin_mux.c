@@ -22,6 +22,9 @@ pin_labels:
 - {pin_num: '12', pin_signal: PIO0_11/I2C0_SDA, label: STEP_STEP, identifier: STEP_STEP}
 - {pin_num: '2', pin_signal: PIO0_13/ADC_10, label: STEP_DIR, identifier: STEP_DIR}
 - {pin_num: '36', pin_signal: PIO0_0/ACMP_I1, label: LuxServo, identifier: LuxServo}
+- {pin_num: '18', pin_signal: PIO0_26, label: LS_Zigi, identifier: LS_Zigi}
+- {pin_num: '17', pin_signal: PIO0_27, label: LS_PET, identifier: LS_PET}
+- {pin_num: '7', pin_signal: PIO0_28/WKTCLKIN, label: LS_Bier, identifier: LS_Bier}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -48,6 +51,9 @@ BOARD_InitPins:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
 - pin_list:
   - {pin_num: '36', peripheral: SCT0, signal: 'OUT, 0', pin_signal: PIO0_0/ACMP_I1}
+  - {pin_num: '18', peripheral: PINT, signal: 'PINT, 0', pin_signal: PIO0_26}
+  - {pin_num: '17', peripheral: PINT, signal: 'PINT, 1', pin_signal: PIO0_27}
+  - {pin_num: '7', peripheral: PINT, signal: 'PINT, 2', pin_signal: PIO0_28/WKTCLKIN}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -66,6 +72,33 @@ void BOARD_InitPins(void)
 
     /* SCT_OUT0 connect to P0_0 */
     SWM_SetMovablePinSelect(SWM0, kSWM_SCT_OUT0, kSWM_PortPin_P0_0);
+
+    SYSCON->PINTSEL[0] = ((SYSCON->PINTSEL[0] &
+                           /* Mask bits to zero which are setting */
+                           (~(SYSCON_PINTSEL_INTPIN_MASK)))
+
+                          /* Pin number select for pin interrupt or pattern match engine input. (PIO0_0 to
+                           * PIO0_31correspond to numbers 0 to 31 and PIO1_0 to PIO1_31 correspond to numbers 32 to
+                           * 63).: 0x1Au */
+                          | SYSCON_PINTSEL_INTPIN(0x1Au));
+
+    SYSCON->PINTSEL[1] = ((SYSCON->PINTSEL[1] &
+                           /* Mask bits to zero which are setting */
+                           (~(SYSCON_PINTSEL_INTPIN_MASK)))
+
+                          /* Pin number select for pin interrupt or pattern match engine input. (PIO0_0 to
+                           * PIO0_31correspond to numbers 0 to 31 and PIO1_0 to PIO1_31 correspond to numbers 32 to
+                           * 63).: 0x1Bu */
+                          | SYSCON_PINTSEL_INTPIN(0x1Bu));
+
+    SYSCON->PINTSEL[2] = ((SYSCON->PINTSEL[2] &
+                           /* Mask bits to zero which are setting */
+                           (~(SYSCON_PINTSEL_INTPIN_MASK)))
+
+                          /* Pin number select for pin interrupt or pattern match engine input. (PIO0_0 to
+                           * PIO0_31correspond to numbers 0 to 31 and PIO1_0 to PIO1_31 correspond to numbers 32 to
+                           * 63).: 0x1Cu */
+                          | SYSCON_PINTSEL_INTPIN(0x1Cu));
 
     /* Disable clock for switch matrix. */
     CLOCK_DisableClock(kCLOCK_Swm);
