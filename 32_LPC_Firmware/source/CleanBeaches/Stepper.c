@@ -15,6 +15,11 @@
 #define CTIMER_CLK_FREQ CLOCK_GetFreq(kCLOCK_CoreSysClk)
 #define MS_TICKS(x) (MSEC_TO_COUNT(x, CTIMER_CLK_FREQ))
 
+/* default settings */
+#define STEPPER_INOUT_DELAYMS (6)
+#define STEPPER_LEFTRIGHT_DELAYMS (6)
+#define STEPPER_UPDOWN_DELAYMS (10)
+
 /* Static Pins for usage throughout the file */
 static McuGPIO_Handle_t EnPin;
 static McuGPIO_Handle_t Ms1Pin;
@@ -187,16 +192,16 @@ bool Stepper_Isdone(stepper_t stepper){
 void Stepper_Init(void){
 	Pins_Init();
 	// default stepper setting
-	stepCtrl[STEPPER_INOUT].delayMatch = MS_TICKS(6);
-	stepCtrl[STEPPER_INOUT].delayms = 6;
+	stepCtrl[STEPPER_INOUT].delayMatch = MS_TICKS(STEPPER_INOUT_DELAYMS);
+	stepCtrl[STEPPER_INOUT].delayms = STEPPER_INOUT_DELAYMS;
 	stepCtrl[STEPPER_INOUT].dir = IN;
 	stepCtrl[STEPPER_INOUT].stepsTodo = 0;
-	stepCtrl[STEPPER_LEFTRIGHT].delayMatch = MS_TICKS(6);
-	stepCtrl[STEPPER_LEFTRIGHT].delayms = 6;
+	stepCtrl[STEPPER_LEFTRIGHT].delayMatch = MS_TICKS(STEPPER_LEFTRIGHT_DELAYMS);
+	stepCtrl[STEPPER_LEFTRIGHT].delayms = STEPPER_LEFTRIGHT_DELAYMS;
 	stepCtrl[STEPPER_LEFTRIGHT].dir = LEFT;
 	stepCtrl[STEPPER_LEFTRIGHT].stepsTodo = 0;
-	stepCtrl[STEPPER_UPDOWN].delayMatch = MS_TICKS(20);
-	stepCtrl[STEPPER_UPDOWN].delayms = 20;
+	stepCtrl[STEPPER_UPDOWN].delayMatch = MS_TICKS(STEPPER_UPDOWN_DELAYMS);
+	stepCtrl[STEPPER_UPDOWN].delayms = STEPPER_UPDOWN_DELAYMS;
 	stepCtrl[STEPPER_UPDOWN].dir = UP;
 	stepCtrl[STEPPER_UPDOWN].stepsTodo = 0;
 	Stepper_Timer_Init();

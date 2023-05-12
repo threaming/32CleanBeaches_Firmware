@@ -57,7 +57,7 @@ int main(void) {
     McuWait_Init();
     McuGPIO_Init();
     Uart_Init();
-    Stepper_Init();
+//    Stepper_Init();
     Servo_Init();
     Counter_Init();
 
@@ -70,12 +70,15 @@ int main(void) {
 
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-    	Uart_SendString("\nHello PREN ");
-    	Uart_SendNum32(GetCnt(ZIGI));
-    	Stepper_Dostuff(STEPPER_INOUT, OUT, 500);
-    	McuWait_Waitms(5000);
-    	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
-    	McuWait_Waitms(5000);
+
+//    	Stepper_Dostuff(STEPPER_INOUT, OUT, 500);
+//    	Stepper_Dostuff(STEPPER_UPDOWN, UP, 1000);
+//    	while(!Stepper_Isdone(STEPPER_UPDOWN)){;}
+//    	McuWait_Waitms(500);
+//    	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
+//    	Stepper_Dostuff(STEPPER_UPDOWN, DOWN, 1000);
+//    	while(!Stepper_Isdone(STEPPER_UPDOWN)){;}
+    	McuWait_Waitms(1000);
 
 //    	Stepper_Home(STEPPER_INOUT);
 //    	while(!Stepper_Isdone(STEPPER_INOUT)){;}
