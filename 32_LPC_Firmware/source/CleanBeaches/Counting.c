@@ -72,16 +72,19 @@ void Counter_Init(void){
 
 	/* Setup Pin Interrupt 0 for rising edge */
 	PINT_PinInterruptConfig(PINT, kPINT_ZIGI, kPINT_PinIntEnableRiseEdge, pint_zigi_callback);
+	NVIC_SetPriority(PIN_INT0_IRQn, 2);		// Set Pin Interrupt to lower than timer
 	/* Enable callbacks for PINT0 by Index */
 	PINT_EnableCallbackByIndex(PINT, kPINT_ZIGI);
 
 	/* Setup Pin Interrupt 1 for rising edge */
 	PINT_PinInterruptConfig(PINT, kPINT_PET, kPINT_PinIntEnableRiseEdge, pint_pet_callback);
+	NVIC_SetPriority(PIN_INT1_IRQn, 2);		// Set Pin Interrupt to lower than timer
 	/* Enable callbacks for PINT0 by Index */
 	PINT_EnableCallbackByIndex(PINT, kPINT_PET);
 
 	/* Setup Pin Interrupt 2 for rising edge */
 	PINT_PinInterruptConfig(PINT, kPINT_BIER, kPINT_PinIntEnableRiseEdge, pint_bier_callback);
+	NVIC_SetPriority(PIN_INT2_IRQn, 2);		// Set Pin Interrupt to lower than timer
 	/* Enable callbacks for PINT0 by Index */
 	PINT_EnableCallbackByIndex(PINT, kPINT_BIER);
 

@@ -57,7 +57,7 @@ int main(void) {
     McuWait_Init();
     McuGPIO_Init();
     Uart_Init();
-//    Stepper_Init();
+    Stepper_Init();
     Servo_Init();
     Counter_Init();
 
@@ -71,17 +71,20 @@ int main(void) {
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
 
-//    	Stepper_Dostuff(STEPPER_INOUT, OUT, 500);
+//    	Stepper_Dostuff(STEPPER_INOUT, OUT, 1000);
 //    	Stepper_Dostuff(STEPPER_UPDOWN, UP, 1000);
-//    	while(!Stepper_Isdone(STEPPER_UPDOWN)){;}
-//    	McuWait_Waitms(500);
-//    	Stepper_Dostuff(STEPPER_INOUT, IN, 500);
-//    	Stepper_Dostuff(STEPPER_UPDOWN, DOWN, 1000);
-//    	while(!Stepper_Isdone(STEPPER_UPDOWN)){;}
-    	McuWait_Waitms(1000);
-
-//    	Stepper_Home(STEPPER_INOUT);
 //    	while(!Stepper_Isdone(STEPPER_INOUT)){;}
+//    	McuWait_Waitms(500);
+//    	Stepper_Dostuff(STEPPER_INOUT, IN, 1000);
+//    	Stepper_Dostuff(STEPPER_UPDOWN, DOWN, 1000);
+//    	while(!Stepper_Isdone(STEPPER_INOUT)){;}
+
+    	Stepper_Home(STEPPER_BACKFORTH);
+    	while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
+    	McuWait_Waitms(1000);
+    	Stepper_Dostuff(STEPPER_BACKFORTH, FORTH, 4500);	// drive band to full extent, about 4500 steps
+    	while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
+    	McuWait_Waitms(1000);
 //    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
 //    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
 

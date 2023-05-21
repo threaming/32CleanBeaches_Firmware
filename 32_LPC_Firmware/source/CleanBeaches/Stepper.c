@@ -19,6 +19,7 @@
 #define STEPPER_INOUT_DELAYMS (6)
 #define STEPPER_LEFTRIGHT_DELAYMS (6)
 #define STEPPER_UPDOWN_DELAYMS (10)
+#define STEPPER_BACKFORTH_DELAYMS (4)
 
 /* Static Pins for usage throughout the file */
 static McuGPIO_Handle_t EnPin;
@@ -31,10 +32,12 @@ static McuGPIO_Handle_t BlueLED;
 static ctimer_match_config_t matchConfig0;
 static ctimer_match_config_t matchConfig1;
 static ctimer_match_config_t matchConfig2;
+static ctimer_match_config_t matchConfig3;
 
 /* Static data for stepper control */
 typedef struct{
 	direction_t dir;
+	direction_t homeDir;
 	uint32_t stepsTodo;
 	int32_t currentPos;
 	uint32_t delayms;
@@ -45,7 +48,7 @@ typedef struct{
 	McuGPIO_Handle_t StopPin;
 } stepControl_t;
 
-static stepControl_t stepCtrl[3];
+static stepControl_t stepCtrl[4];
 
 /* Function Prototypes */
 void Pins_Init(void);
@@ -53,13 +56,15 @@ void Stepper_Timer_Init(void);
 void ctimer_match0_callback(uint32_t flags);
 void ctimer_match1_callback(uint32_t flags);
 void ctimer_match2_callback(uint32_t flags);
+void ctimer_match3_callback(uint32_t flags);
 
 /* Array of function pointers for callback for each channel for Steppers */
 ctimer_callback_t ctimer_callback_table[] = {
     ctimer_match0_callback,
 	ctimer_match1_callback,
 	ctimer_match2_callback,
-	NULL, NULL, NULL, NULL, NULL};
+	ctimer_match3_callback,
+	NULL, NULL, NULL, NULL};
 
 /*
  * Stepper Control function to be called every couple of milliseconds, defined
@@ -69,6 +74,13 @@ void StepCtrl(stepper_t stepper){
 	/* set direction */
 	McuGPIO_SetValue(stepCtrl[stepper].DirPin, stepCtrl[stepper].dir);
 	McuGPIO_SetValue(BlueLED, stepCtrl[stepper].dir);
+
+	/* at the endstop */
+	if(McuGPIO_IsHigh(stepCtrl[stepper].StopPin) && (stepCtrl[stepper].dir == stepCtrl[stepper].homeDir)){
+		stepCtrl[stepper].homing = false;
+		stepCtrl[stepper].currentPos = 0;
+		stepCtrl[stepper].stepsTodo = 0;
+	}
 
 	/* Do steps if needed */
 	if(stepCtrl[stepper].stepsTodo){	// check for steps to do
@@ -83,12 +95,6 @@ void StepCtrl(stepper_t stepper){
 		else{
 			stepCtrl[stepper].currentPos--;
 		}
-
-		/* reached endstop */
-		if(McuGPIO_IsHigh(stepCtrl[stepper].StopPin)){
-			stepCtrl[stepper].stepsTodo = 0;
-			stepCtrl[stepper].currentPos = 0;
-		}
 	}
 
 	/* Homing sequence */
@@ -97,13 +103,8 @@ void StepCtrl(stepper_t stepper){
 		McuGPIO_SetLow(GreenLED);	// debug
 		McuGPIO_SetLow(stepCtrl[stepper].StepPin);
 		McuGPIO_SetHigh(GreenLED);	// debug
-		if(McuGPIO_IsHigh(stepCtrl[stepper].StopPin)){
-			stepCtrl[stepper].homing = false;
-			stepCtrl[stepper].currentPos = 0;
-		}
 	}
 }
-
 
 /*
  * match0 callback for driving the arm in and out
@@ -139,6 +140,17 @@ void ctimer_match2_callback(uint32_t flags){
 }
 
 /*
+ * match3 callback for moving the band back and forth
+ */
+void ctimer_match3_callback(uint32_t flags){
+	/* set next match within corresponding delay */
+	matchConfig3.matchValue += stepCtrl[STEPPER_BACKFORTH].delayMatch;
+	CTIMER_SetupMatch(CTIMER0, kCTIMER_Match_3, &matchConfig3);
+	/* Control the stepper */
+	StepCtrl(STEPPER_BACKFORTH);
+}
+
+/*
  * Testing loop
  */
 void Stepper_Dostuff(stepper_t stepper, direction_t dir, uint32_t steps){
@@ -153,19 +165,7 @@ void Stepper_Dostuff(stepper_t stepper, direction_t dir, uint32_t steps){
 void Stepper_Home(stepper_t stepper){
 	stepCtrl[stepper].homing = true;
 	stepCtrl[stepper].stepsTodo = 0;
-
-	// adjust homing direction here if needed
-	switch(stepper){
-	case STEPPER_INOUT:
-		stepCtrl[STEPPER_INOUT].dir = IN;
-		break;
-	case STEPPER_UPDOWN:
-		stepCtrl[STEPPER_UPDOWN].dir = UP;
-		break;
-	case STEPPER_LEFTRIGHT:
-		stepCtrl[STEPPER_LEFTRIGHT].dir = RIGHT;
-		break;
-	}
+	stepCtrl[stepper].dir = stepCtrl[stepper].homeDir;
 }
 
 /*
@@ -187,6 +187,14 @@ bool Stepper_Isdone(stepper_t stepper){
 }
 
 /*
+ * Change delay time of a stepper
+ */
+void Stepper_NewDelayms(stepper_t stepper, uint32_t delayms){
+	stepCtrl[stepper].delayms = delayms;
+	stepCtrl[stepper].delayMatch = MS_TICKS(delayms);
+}
+
+/*
  * Initialize Pins and Timers for Stepper ussage.
  */
 void Stepper_Init(void){
@@ -195,15 +203,27 @@ void Stepper_Init(void){
 	stepCtrl[STEPPER_INOUT].delayMatch = MS_TICKS(STEPPER_INOUT_DELAYMS);
 	stepCtrl[STEPPER_INOUT].delayms = STEPPER_INOUT_DELAYMS;
 	stepCtrl[STEPPER_INOUT].dir = IN;
+	stepCtrl[STEPPER_INOUT].homeDir = IN;
 	stepCtrl[STEPPER_INOUT].stepsTodo = 0;
+	stepCtrl[STEPPER_INOUT].homing = false;
 	stepCtrl[STEPPER_LEFTRIGHT].delayMatch = MS_TICKS(STEPPER_LEFTRIGHT_DELAYMS);
 	stepCtrl[STEPPER_LEFTRIGHT].delayms = STEPPER_LEFTRIGHT_DELAYMS;
 	stepCtrl[STEPPER_LEFTRIGHT].dir = LEFT;
+	stepCtrl[STEPPER_LEFTRIGHT].dir = LEFT;
 	stepCtrl[STEPPER_LEFTRIGHT].stepsTodo = 0;
+	stepCtrl[STEPPER_LEFTRIGHT].homing = false;
 	stepCtrl[STEPPER_UPDOWN].delayMatch = MS_TICKS(STEPPER_UPDOWN_DELAYMS);
 	stepCtrl[STEPPER_UPDOWN].delayms = STEPPER_UPDOWN_DELAYMS;
 	stepCtrl[STEPPER_UPDOWN].dir = UP;
+	stepCtrl[STEPPER_UPDOWN].homeDir = UP;
 	stepCtrl[STEPPER_UPDOWN].stepsTodo = 0;
+	stepCtrl[STEPPER_UPDOWN].homing = false;
+	stepCtrl[STEPPER_BACKFORTH].delayMatch = MS_TICKS(STEPPER_BACKFORTH_DELAYMS);
+	stepCtrl[STEPPER_BACKFORTH].delayms = STEPPER_BACKFORTH_DELAYMS;
+	stepCtrl[STEPPER_BACKFORTH].dir = FORTH;
+	stepCtrl[STEPPER_BACKFORTH].homeDir = BACK;
+	stepCtrl[STEPPER_BACKFORTH].stepsTodo = 0;
+	stepCtrl[STEPPER_BACKFORTH].homing = false;
 	Stepper_Timer_Init();
 }
 
@@ -294,6 +314,34 @@ void Pins_Init(void){
 	config.hw.iocon = IOCON_INDEX_PIO0_20;
 	stepCtrl[STEPPER_UPDOWN].StopPin = McuGPIO_InitGPIO(&config);
 
+/* GPIO Stepper 4 Step */
+	config.isInput = false;
+	config.isHighOnInit = false;
+	config.hw.gpio = GPIO;
+	config.hw.port = 0;
+	config.hw.pin = 22;
+	config.hw.iocon = IOCON_INDEX_PIO0_22;
+	stepCtrl[STEPPER_BACKFORTH].StepPin = McuGPIO_InitGPIO(&config);
+
+/* GPIO Stepper 4 Direction */
+	config.isInput = false;
+	config.isHighOnInit = false;
+	config.hw.gpio = GPIO;
+	config.hw.port = 0;
+	config.hw.pin = 21;
+	config.hw.iocon = IOCON_INDEX_PIO0_21;
+	stepCtrl[STEPPER_BACKFORTH].DirPin = McuGPIO_InitGPIO(&config);
+
+/* GPIO Stepper 4 Limitswitch */
+	config.isInput = false;
+	config.isHighOnInit = false;
+	config.hw.gpio = GPIO;
+	config.hw.port = 0;
+	config.hw.pin = 23;
+	config.hw.iocon = IOCON_INDEX_PIO0_23;
+	stepCtrl[STEPPER_BACKFORTH].StopPin = McuGPIO_InitGPIO(&config);
+
+
 /* GPIO Stepper Enable */
 	config.isInput = false;
 	config.isHighOnInit = true;
@@ -371,10 +419,22 @@ void Stepper_Timer_Init(void){
 	matchConfig2.outPinInitState    = false;
 	matchConfig2.enableInterrupt    = true;
 
+	/* Configuration 3 Stepper up/down */
+	matchConfig3.enableCounterReset = false;
+	matchConfig3.enableCounterStop  = false;
+	matchConfig3.matchValue         = stepCtrl[STEPPER_BACKFORTH].delayMatch;
+	matchConfig3.outControl         = kCTIMER_Output_NoAction;
+	matchConfig3.outPinInitState    = false;
+	matchConfig3.enableInterrupt    = true;
+
 	CTIMER_RegisterCallBack(CTIMER0, &ctimer_callback_table[0], kCTIMER_MultipleCallback);
 	CTIMER_SetupMatch(CTIMER0, kCTIMER_Match_0, &matchConfig0);
 	CTIMER_SetupMatch(CTIMER0, kCTIMER_Match_1, &matchConfig1);
 	CTIMER_SetupMatch(CTIMER0, kCTIMER_Match_2, &matchConfig2);
+	CTIMER_SetupMatch(CTIMER0, kCTIMER_Match_3, &matchConfig3);
+
+	NVIC_SetPriority(CTIMER0_IRQn, 1);	// Set Timer priority to highest
+
 	CTIMER_StartTimer(CTIMER0);
 
 	McuGPIO_SetLow(EnPin);
