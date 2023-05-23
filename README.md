@@ -2,6 +2,6 @@
 
 Microcontroller firmware for a beach cleaning robot. Project module at Lucerne University of Applied Sciences &amp; Arts.
 
-Firmware written in C for a NXP MK22FN512VLH12 microcontroller. The TinyK22 module sits beside a Raspberry Pi 4 and acts as a realtime extension for it.
+Firmware written in C for a NXP LPC845 microcontroller. The LPC845 breakout module sits beside a Raspberry Pi 4. The microcontroller controls the arm of the robot and counts the collected objects.
 
-The firmware is based on the work of Christian Jost, a "TinyK22-RaspberryPi-UART-Bridge" for the course APROG (Advanced Programming).
+The firmware is written with the McuExpresso IDE from NXP.
