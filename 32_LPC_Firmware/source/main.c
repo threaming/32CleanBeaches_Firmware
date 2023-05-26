@@ -46,6 +46,9 @@
 /* TODO: insert other definitions and declarations here. */
 #define SCTIMER_SERVO_BUCKET	kSCTIMER_Out_0
 
+/* Global Handles */
+McuGPIO_Handle_t MainSwitch = NULL;
+
 /*
  * @brief   Application entry point.
  */
@@ -60,6 +63,17 @@ int main(void) {
     Stepper_Init();
     Servo_Init();
     Counter_Init();
+
+    /* Main switch */
+	McuGPIO_Config_t config;
+	McuGPIO_GetDefaultConfig(&config);
+	config.isInput = true;
+	config.isHighOnInit = false;
+	config.hw.gpio = GPIO;
+	config.hw.port = 0;
+	config.hw.pin = 4;
+	config.hw.iocon = IOCON_INDEX_PIO0_4;
+	MainSwitch = McuGPIO_InitGPIO(&config);
 
     /* PWM Setup */
     uint32_t eventServoBucket;
@@ -79,15 +93,17 @@ int main(void) {
 //    	Stepper_Dostuff(STEPPER_UPDOWN, DOWN, 1000);
 //    	while(!Stepper_Isdone(STEPPER_INOUT)){;}
 
-    	Stepper_Home(STEPPER_BACKFORTH);
-    	while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
-    	McuWait_Waitms(1000);
-    	Stepper_Dostuff(STEPPER_BACKFORTH, FORTH, 4500);	// drive band to full extent, about 4500 steps
-    	while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
-    	McuWait_Waitms(1000);
-//    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
-//    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
-
+    	/* Working Sequence */
+    	while(McuGPIO_IsHigh(MainSwitch)){
+			Stepper_Home(STEPPER_BACKFORTH);
+			while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
+			McuWait_Waitms(1000);
+			Stepper_Dostuff(STEPPER_BACKFORTH, FORTH, 4500);	// drive band to full extent, about 4500 steps
+			while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
+			McuWait_Waitms(1000);
+	//    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
+	//    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
+    	}
     }
     return 0 ;
 }

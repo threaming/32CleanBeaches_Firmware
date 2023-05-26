@@ -17,9 +17,9 @@
 
 /* default settings */
 #define STEPPER_INOUT_DELAYMS (6)
-#define STEPPER_LEFTRIGHT_DELAYMS (6)
+#define STEPPER_LEFTRIGHT_DELAYMS (15)
 #define STEPPER_UPDOWN_DELAYMS (10)
-#define STEPPER_BACKFORTH_DELAYMS (4)
+#define STEPPER_BACKFORTH_DELAYMS (4)		// 4ms
 
 /* Static Pins for usage throughout the file */
 static McuGPIO_Handle_t EnPin;
