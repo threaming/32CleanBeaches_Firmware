@@ -25,6 +25,7 @@ pin_labels:
 - {pin_num: '18', pin_signal: PIO0_26, label: LS_Zigi, identifier: LS_Zigi}
 - {pin_num: '17', pin_signal: PIO0_27, label: LS_PET, identifier: LS_PET}
 - {pin_num: '7', pin_signal: PIO0_28/WKTCLKIN, label: LS_Bier, identifier: LS_Bier}
+- {pin_num: '24', pin_signal: PIO0_1/ACMP_I2/CLKIN, label: Fan, identifier: Fan}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -54,6 +55,7 @@ BOARD_InitPins:
   - {pin_num: '18', peripheral: PINT, signal: 'PINT, 0', pin_signal: PIO0_26}
   - {pin_num: '17', peripheral: PINT, signal: 'PINT, 1', pin_signal: PIO0_27}
   - {pin_num: '7', peripheral: PINT, signal: 'PINT, 2', pin_signal: PIO0_28/WKTCLKIN}
+  - {pin_num: '24', peripheral: CTIMER0, signal: 'MATCH, 1', pin_signal: PIO0_1/ACMP_I2/CLKIN}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -69,6 +71,9 @@ void BOARD_InitPins(void)
 {
     /* Enables clock for switch matrix.: enable */
     CLOCK_EnableClock(kCLOCK_Swm);
+
+    /* TimerMatchChannel1 connect to P0_1 */
+    SWM_SetMovablePinSelect(SWM0, kSWM_T0_MAT_CHN1, kSWM_PortPin_P0_1);
 
     /* SCT_OUT0 connect to P0_0 */
     SWM_SetMovablePinSelect(SWM0, kSWM_SCT_OUT0, kSWM_PortPin_P0_0);

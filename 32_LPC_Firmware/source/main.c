@@ -45,9 +45,22 @@
 #include "CleanBeaches/Counting.h"
 /* TODO: insert other definitions and declarations here. */
 #define SCTIMER_SERVO_BUCKET	kSCTIMER_Out_0
+#define SCTIMER_PWM_FAN			kSCTIMER_Out_1
 
 /* Global Handles */
 McuGPIO_Handle_t MainSwitch = NULL;
+
+/* States */
+typedef enum {
+	SETUP,
+	GET_STONES,
+	PUT_STONES,
+	WAIT
+} states_t;
+typedef struct{
+	states_t state;
+	states_t next_state;
+} states_s;
 
 /*
  * @brief   Application entry point.
@@ -75,35 +88,82 @@ int main(void) {
 	config.hw.iocon = IOCON_INDEX_PIO0_4;
 	MainSwitch = McuGPIO_InitGPIO(&config);
 
-    /* PWM Setup */
+    /* PWM Setup servo */
     uint32_t eventServoBucket;
     Servo_Handle_t servoBucket = {SCTIMER_SERVO_BUCKET, 900, 0, 2100, 0, 0}; // SCTIMER, lower-pulse, -register, upper-pulse, -register, percentage
     Servo_Setup(&servoBucket, &eventServoBucket);
     Servo_TimerStart();
     Servo_SetPulse(servoBucket, 100, eventServoBucket);
 
+    /* PWM Setup Fan */
+	uint32_t eventFan;
+	Servo_Handle_t servoFan = {SCTIMER_PWM_FAN, 900, 0, 2100, 0, 0}; // SCTIMER, lower-pulse, -register, upper-pulse, -register, percentage
+	Servo_Setup(&servoFan, &eventFan);
+	Servo_TimerStart();
+	Servo_SetPulse(servoFan, 100, eventFan);
+
+    /* FSM setup */
+    states_s fsm;
+    fsm.state = fsm.next_state = SETUP;
+
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
+    	/* Finite State Machine */
+    	switch(fsm.state){
+    	case SETUP:
+    		Stepper_Home(STEPPER_BACKFORTH);
+    		Stepper_Home(STEPPER_INOUT);
+    		Stepper_Home(STEPPER_LEFTRIGHT);
+    		Stepper_Home(STEPPER_UPDOWN);
+    		while(!(Stepper_Isdone(STEPPER_BACKFORTH) 	&& 	// Wait for steppers to arrive
+    				Stepper_Isdone(STEPPER_INOUT) 		&&
+					Stepper_Isdone(STEPPER_LEFTRIGHT)	&&
+					Stepper_Isdone(STEPPER_UPDOWN))){
+    			McuWait_Waitms(10);
+    		}
+    		while(McuGPIO_IsLow(MainSwitch)){				// Wait for user activation
+    			McuWait_Waitms(10);
+    		}
+    		Stepper_Dostuff(STEPPER_BACKFORTH, FORTH, 4500);
+    		fsm.state = GET_STONES;
+    		break;
 
-//    	Stepper_Dostuff(STEPPER_INOUT, OUT, 1000);
-//    	Stepper_Dostuff(STEPPER_UPDOWN, UP, 1000);
-//    	while(!Stepper_Isdone(STEPPER_INOUT)){;}
-//    	McuWait_Waitms(500);
-//    	Stepper_Dostuff(STEPPER_INOUT, IN, 1000);
-//    	Stepper_Dostuff(STEPPER_UPDOWN, DOWN, 1000);
-//    	while(!Stepper_Isdone(STEPPER_INOUT)){;}
+    	case GET_STONES:
+    		fsm.next_state = PUT_STONES;
+    		Stepper_Dostuff(STEPPER_UPDOWN, DOWN, 1000);
+    		Stepper_Dostuff(STEPPER_INOUT, OUT, 5000);
+    		Stepper_Dostuff(STEPPER_LEFTRIGHT, LEFT, 250);
+    		fsm.state = WAIT;
+    		break;
 
-    	/* Working Sequence */
-    	while(McuGPIO_IsHigh(MainSwitch)){
-			Stepper_Home(STEPPER_BACKFORTH);
-			while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
-			McuWait_Waitms(1000);
-			Stepper_Dostuff(STEPPER_BACKFORTH, FORTH, 4500);	// drive band to full extent, about 4500 steps
-			while(!Stepper_Isdone(STEPPER_BACKFORTH)){;}
-			McuWait_Waitms(1000);
+    	case PUT_STONES:
+    		fsm.next_state = GET_STONES;
+    		Stepper_Dostuff(STEPPER_INOUT, IN, 1000);
+			Stepper_Home(STEPPER_LEFTRIGHT);
+			Stepper_Home(STEPPER_UPDOWN);
+			fsm.state = WAIT;
+    		break;
+
+    	case WAIT:
+    		if(	Stepper_Isdone(STEPPER_INOUT) 		&& 		// Wait for steppers to arrive
+				Stepper_Isdone(STEPPER_LEFTRIGHT)	&&
+				Stepper_Isdone(STEPPER_UPDOWN)){
+				fsm.state = fsm.next_state;
+			}
+    		break;
+
+    	default:
+    		fsm.state = SETUP;
+    		break;
+    	}
+
+    	/* FSM external control sequence */
+    	if (McuGPIO_IsLow(MainSwitch)){
+    		fsm.state = SETUP;
+    	}
+
 	//    	Servo_SetPulse(servoBucket, 20, eventServoBucket);
 	//    	Servo_SetPulse(servoBucket, 80, eventServoBucket);
-    	}
     }
     return 0 ;
 }

@@ -37,6 +37,7 @@
                <pin_label pin_num="18" pin_signal="PIO0_26" label="LS_Zigi" identifier="LS_Zigi"/>
                <pin_label pin_num="17" pin_signal="PIO0_27" label="LS_PET" identifier="LS_PET"/>
                <pin_label pin_num="7" pin_signal="PIO0_28/WKTCLKIN" label="LS_Bier" identifier="LS_Bier"/>
+               <pin_label pin_num="24" pin_signal="PIO0_1/ACMP_I2/CLKIN" label="Fan" identifier="Fan"/>
             </pin_labels>
          </pins_profile>
          <functions_list>
@@ -58,6 +59,11 @@
                         <data>true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="Peripheral" resourceId="CTIMER0" description="Peripheral CTIMER0 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
                      <feature name="enabled" evaluation="equal" configuration="core0">
                         <data>true</data>
@@ -74,6 +80,7 @@
                   <pin peripheral="PINT" signal="PINT, 0" pin_num="18" pin_signal="PIO0_26"/>
                   <pin peripheral="PINT" signal="PINT, 1" pin_num="17" pin_signal="PIO0_27"/>
                   <pin peripheral="PINT" signal="PINT, 2" pin_num="7" pin_signal="PIO0_28/WKTCLKIN"/>
+                  <pin peripheral="CTIMER0" signal="MATCH, 1" pin_num="24" pin_signal="PIO0_1/ACMP_I2/CLKIN"/>
                </pins>
             </function>
          </functions_list>

@@ -53,6 +53,13 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_LS_Bier_PIN_MASK (1U << 28U)      /*!<@brief PORT pin mask */
                                                          /* @} */
 
+/*! @name PIO0_1 (number 24), Fan
+  @{ */
+#define BOARD_INITPINS_Fan_PORT 0U                  /*!<@brief PORT device index: 0 */
+#define BOARD_INITPINS_Fan_PIN 1U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_Fan_PIN_MASK (1U << 1U)      /*!<@brief PORT pin mask */
+                                                    /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *
